@@ -1,5 +1,6 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import CountryCard from './CountryCard';
+import CountryPagination from './CountryPagination';
 
 
 const sorts = [
@@ -17,6 +18,9 @@ function Country(){
     const [sortType, setSortType] = useState("");
     const [isSearch, setIsSearch] = useState(false);
 
+    const [numRecord, setNumRecord] = useState(0);
+    const [currentPage, setCurrentPage] = useState(1);
+    let LIMIT = 25;
     
     useEffect(() => {
         if(isSearch === true && sortType !== ""){
@@ -26,7 +30,7 @@ function Country(){
         }else{
             getCountries();
         }       
-    }, [sortType]);
+    }, [currentPage, sortType]);
 
 
     console.log(countries.length);
@@ -37,8 +41,12 @@ function Country(){
             const data = await res.json();
             setIsLoaded(true);
             setIsSearch(false);
+            setNumRecord(data.length);
             // setCountries(data);
-            sortData(data);
+            sortData(data.slice(
+                (currentPage - 1) * LIMIT,
+                (currentPage - 1) * LIMIT + LIMIT
+            ));
             setData(data);
         }catch(error){
             console.error(error);
@@ -70,18 +78,28 @@ function Country(){
         setIsSearch(true);
         const result = data.filter((x) =>
             x?.name?.common
-              ?.toLowerCase()
-              ?.includes(e?.target?.value?.toLowerCase())
+                ?.toLowerCase()
+                ?.includes(e?.target?.value?.toLowerCase())
         );
+        setIsLoaded(true);
+        setNumRecord(result.length);
         setData2(result);      
         setCountries(result);
+    };
 
-      };
+    const onPageChanged = useCallback(
+        (event, page) => {
+            event.preventDefault();
+            setCurrentPage(page);
+        },
+        [setCurrentPage]
+    );
 
-console.log(countries);
+
 
     return (
         <>
+            
             {!countries ? 
                 <h1 className="text-gray-900 font-bold uppercase tracking-wide flex items-center justify-center text-center h-screen text-4xl dark:text-white">Loading...</h1>
                 : (
@@ -137,8 +155,20 @@ console.log(countries);
                                         </button>
                                         
                                     </div>
-                                
 
+                                    <div className="hidden ml-auto md:flex gap-x-2">       
+                                        {isLoaded ? (               
+                                            <CountryPagination
+                                                totalRecords={numRecord}
+                                                pageLimit={LIMIT}
+                                                pageNeighbours={2}
+                                                onPageChanged={onPageChanged}
+                                                currentPage={currentPage}
+                                            />       
+                                        ) : (
+                                            <div></div>
+                                        )}                                     
+                                    </div>                
     
                                 </div> 
 
