@@ -1,4 +1,5 @@
 import React, {useState, useEffect} from 'react';
+import CountryCard from './CountryCard';
 
 function Country(){
 
@@ -34,11 +35,9 @@ function Country(){
                         </header>
 
                         <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 xl:gap-6 my-4 md:mb-12">
-                            <ul>
-                                {countries.map((country) => (
-                                    <li key={country.cca2}>{country.name.official}</li>                            
-                                ))}
-                            </ul>
+                            {countries.map((country) => (
+                                <CountryCard key={country.name.common} {...country} />                            
+                            ))}
                         </div>
 
                     </div>
