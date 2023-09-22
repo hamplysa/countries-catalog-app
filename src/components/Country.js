@@ -1,16 +1,32 @@
 import React, {useState, useEffect} from 'react';
 import CountryCard from './CountryCard';
 
+
+const sorts = [
+    "ascending",
+    "descending",
+];
+
 function Country(){
 
     const [countries, setCountries] = useState([]);
-    const [data, setData] = useState([]);   
+    const [data, setData] = useState([]); 
+    const [data2, setData2] = useState([]);   
     const [isLoaded, setIsLoaded] = useState(false);
     const [searchInput, setSearchInput] = useState("");
+    const [sortType, setSortType] = useState("");
+    const [isSearch, setIsSearch] = useState(false);
+
     
     useEffect(() => {
-        getCountries();
-    }, []);
+        if(isSearch === true && sortType !== ""){
+            sortData(countries);
+        }else if (isSearch === true && sortType === ""){
+            sortData(data2);
+        }else{
+            getCountries();
+        }       
+    }, [sortType]);
 
 
     console.log(countries.length);
@@ -20,26 +36,49 @@ function Country(){
             const res = await fetch("https://restcountries.com/v3.1/all");
             const data = await res.json();
             setIsLoaded(true);
-            setCountries(data);
+            setIsSearch(false);
+            // setCountries(data);
+            sortData(data);
             setData(data);
         }catch(error){
             console.error(error);
         }
     }
 
+    const sortData = (data) => {
+        let sortedData;
+        if (sortType === 'descending') {
+            sortedData = [...data].sort((a, b) => {
+            return b.name.official.localeCompare(a.name.official);
+            });
+        } else if (sortType === 'ascending') {
+            sortedData = [...data].sort((a, b) => {
+            return a.name.official.localeCompare(b.name.official);
+            });
+        } else {
+            // return data;
+            sortedData = data;
+        }
+        // setData(sortedData);
+        setCountries(sortedData);
+    }
+
 
     const handleChangeInput = (e) => {
         e.preventDefault();
-        setSearchInput(e.target.value);
-        setCountries(
-          data.filter((x) =>
+        setSearchInput(e.target.value);  
+        setIsSearch(true);
+        const result = data.filter((x) =>
             x?.name?.common
               ?.toLowerCase()
               ?.includes(e?.target?.value?.toLowerCase())
-          )
         );
+        setData2(result);      
+        setCountries(result);
+
       };
 
+console.log(countries);
 
     return (
         <>
@@ -75,6 +114,33 @@ function Country(){
                                 
                                     <div className="text-red-400 mt-2.5 absolute"></div>
                                 </div>
+
+                                <div className="mt-4 dark:text-white">Sort by country name</div>
+
+                                <div className='flex mt-2'>
+                                    <div className="flex gap-x-2 flex-wrap">
+
+                                        <select className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
+                                            // defaultValue="default"
+                                            value={sortType}
+                                            onChange={(e) => setSortType(e.target.value)}
+                                        >
+                                            <option disabled value="">Sort by</option>
+                                            {sorts.map(sort => (
+                                                <option key={sort} value={sort}>{sort.charAt(0).toUpperCase() + sort.slice(1)}</option>
+                                            ))}
+                                        </select>
+
+                                        <button type="button" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" 
+                                            onClick={() => setSortType("")}>
+                                            Reset
+                                        </button>
+                                        
+                                    </div>
+                                
+
+    
+                                </div> 
 
                                 
                             </div>
