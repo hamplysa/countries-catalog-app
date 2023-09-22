@@ -1,8 +1,13 @@
-
+import {BrowserRouter, Routes, Route} from 'react-router-dom'
+import Country from './components/Country';
 
 function App() {
   return (
-    <div>Countries Catalog</div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Country />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
