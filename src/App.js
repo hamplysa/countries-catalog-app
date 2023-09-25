@@ -3,7 +3,7 @@ import Country from './components/Country';
 
 function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={window.location.pathname || ''}>
       <Routes>
         <Route path="/" element={<Country />} />
       </Routes>
