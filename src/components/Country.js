@@ -119,7 +119,7 @@ function Country(){
                 <h1 className="text-gray-900 font-bold uppercase tracking-wide flex items-center justify-center text-center h-screen text-4xl dark:text-white">Loading...</h1>
                 : (
                 <main>
-                    <div className="container mx-auto sm:px-12">
+                    <div className="container mx-auto px-6 sm:px-12">
 
                         <header>
                             <div className="py-4 dark:text-white">
