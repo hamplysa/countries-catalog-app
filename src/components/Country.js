@@ -25,8 +25,10 @@ function Country(){
     useEffect(() => {
         if(isSearch === true && sortType !== ""){
             sortData(countries);
+            console.log('t1');
         }else if (isSearch === true && sortType === ""){
             sortData(data2);
+            console.log('t2');
         }else{
             getCountries();
         }       
@@ -43,10 +45,11 @@ function Country(){
             setIsSearch(false);
             setNumRecord(data.length);
             // setCountries(data);
-            sortData(data.slice(
+            /* sortData(data.slice(
                 (currentPage - 1) * LIMIT,
                 (currentPage - 1) * LIMIT + LIMIT
-            ));
+            )); */
+            sortData(data);
             setData(data);
         }catch(error){
             console.error(error);
@@ -84,8 +87,14 @@ function Country(){
         setIsLoaded(true);
         setNumRecord(result.length);
         setData2(result);      
+        /* setCountries(result.slice(
+            (currentPage - 1) * LIMIT,
+            (currentPage - 1) * LIMIT + LIMIT
+        )); */
         setCountries(result);
     };
+
+    console.log(isSearch);
 
     const onPageChanged = useCallback(
         (event, page) => {
@@ -96,11 +105,17 @@ function Country(){
     );
 
 
+    const currentData = countries.slice(
+        (currentPage - 1) * LIMIT,
+        (currentPage - 1) * LIMIT + LIMIT
+    );
+
+
 
     return (
         <>
             
-            {!countries ? 
+            {!currentData ? 
                 <h1 className="text-gray-900 font-bold uppercase tracking-wide flex items-center justify-center text-center h-screen text-4xl dark:text-white">Loading...</h1>
                 : (
                 <main>
@@ -155,7 +170,7 @@ function Country(){
                                         </button>
                                         
                                     </div>
-
+                                    
                                     <div className="hidden ml-auto md:flex gap-x-2">       
                                         {isLoaded ? (               
                                             <CountryPagination
@@ -178,13 +193,29 @@ function Country(){
 
                         <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 xl:gap-6 my-4 md:mb-12">
                             {isLoaded ? (   
-                                countries.map((country) => (
+                                currentData.map((country) => (
                                     <CountryCard key={country.name.common} {...country} />
                                 ))
                             ) : (
                                 <div></div>
                             )} 
                         </div>
+
+
+                        <div className="flex gap-x-2 justify-end mb-12 md:hidden px-4">
+                            {isLoaded ? (               
+                                <CountryPagination
+                                    totalRecords={numRecord}
+                                    pageLimit={LIMIT}
+                                    pageNeighbours={2}
+                                    onPageChanged={onPageChanged}
+                                    currentPage={currentPage}
+                                />       
+                            ) : (
+                                <div></div>
+                            )}
+                        </div>
+
 
                     </div>
                 </main>
